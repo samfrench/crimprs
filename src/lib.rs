@@ -2,7 +2,6 @@ use serde_json::Value;
 
 mod notation;
 mod sorter;
-mod value;
 
 pub fn signature(value: Value) -> String {
     serde_json::to_string(&value).unwrap()

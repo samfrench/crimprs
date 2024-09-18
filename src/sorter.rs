@@ -1,6 +1,6 @@
 use serde_json::Value;
 
-fn sorter(mut data: Value) -> Value {
+pub fn sorter(mut data: Value) -> Value {
     sort_value(&mut data);
     data
 }
@@ -23,7 +23,8 @@ fn normalise_value(value: &Value) -> String {
     match &value {
         Value::String(_s) => value.as_str().unwrap().to_string(),
         Value::Array(_a) => Value::to_string(&value),
-        _ => return format!("{:?}", Value::to_string(&value)),
+        Value::Null => "".to_string(),
+        _ => Value::to_string(&value),
     }
 }
 
@@ -96,6 +97,22 @@ mod tests {
         let data: Value = json_from(r#"[7.1, 3.2, 1.6]"#);
         let result: Value = sorter(data);
         let expected: Value = json_from(r#"[1.6, 3.2, 7.1]"#);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn sort_array_of_same_values_different_types() {
+        let data: Value = json_from(r#"[1, "1", 2, "2"]"#);
+        let result: Value = sorter(data);
+        let expected: Value = json_from(r#"[1, "1", 2, "2"]"#);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn sort_array_of_simple_top_level_values() {
+        let data: Value = json_from(r#"[3, null, 1, "1"]"#);
+        let result: Value = sorter(data);
+        let expected: Value = json_from(r#"[null, 1, "1", 3]"#);
         assert_eq!(result, expected);
     }
 
