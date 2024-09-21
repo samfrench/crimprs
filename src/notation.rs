@@ -38,7 +38,19 @@ impl Notation for Value {
                         .collect::<String>()
                 )
             }
-            Value::Object(_) => todo!(),
+            Value::Object(_o) => {
+                let data = sorter(self.clone());
+
+                format!(
+                    "{}H",
+                    &data
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|x| x.notate())
+                        .collect::<String>()
+                )
+            }
         }
     }
 }
@@ -121,5 +133,12 @@ mod tests {
         let data: Value = json_from(r#"[["b", "2"], "a", 1]"#);
         let result: String = data.notate();
         assert_eq!(result, "1N2SbSAaSA")
+    }
+
+    #[test]
+    fn notate_hash_data_structure() {
+        let data: Value = json_from(r#"{"a": 1}"#);
+        let result: String = data.notate();
+        assert_eq!(result, "1NaSAH")
     }
 }

@@ -15,6 +15,20 @@ fn sort_value(value: &mut Value) {
                 string_to_ascii(normalise_value(a)).cmp(&string_to_ascii(normalise_value(b)))
             });
         }
+        Value::Object(obj) => {
+            let mut data: Vec<(String, Value)> = Vec::new();
+
+            for (key, value) in obj.iter_mut() {
+                sort_value(value);
+                data.push((key.clone(), value.clone()));
+            }
+
+            *value = Value::Array(
+                data.into_iter()
+                    .map(|(k, v)| Value::Array(vec![Value::String(k), v]))
+                    .collect(),
+            );
+        }
         _ => {}
     }
 }
@@ -113,6 +127,22 @@ mod tests {
         let data: Value = json_from(r#"[3, null, 1, "1"]"#);
         let result: Value = sorter(data);
         let expected: Value = json_from(r#"[null, 1, "1", 3]"#);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn sort_hash() {
+        let data: Value = json_from(r#"{"a": 1}"#);
+        let result: Value = sorter(data);
+        let expected: Value = json_from(r#"[["a", 1]]"#);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn sort_nested_hash_data_structure() {
+        let data: Value = json_from(r#"{"a": {"c": null, "2": 2 }}"#);
+        let result: Value = sorter(data);
+        let expected: Value = json_from(r#"[["a", [["2", 2], ["c", null]]]]"#);
         assert_eq!(result, expected);
     }
 
