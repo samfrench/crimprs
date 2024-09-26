@@ -18,12 +18,18 @@ impl Notation for serde_json::Number {
     }
 }
 
+impl Notation for bool {
+    fn notate(&self) -> String {
+        format!("{}B", &self)
+    }
+}
+
 impl Notation for Value {
     fn notate(&self) -> String {
         match self {
             Value::Number(n) => n.notate(),
             Value::Null => "_".to_string(),
-            Value::Bool(_) => todo!(),
+            Value::Bool(b) => b.notate(),
             Value::String(s) => s.notate(),
             Value::Array(_a) => {
                 let data = sorter(self.clone());
@@ -147,5 +153,26 @@ mod tests {
         let data: Value = json_from(r#"{"a": {"c": null, "2": 2 }}"#);
         let result: String = data.notate();
         assert_eq!(result, "aS2S2NA_cSAHAH")
+    }
+
+    #[test]
+    fn notate_null_value() {
+        let data: Value = json_from(r#"null"#);
+        let result: String = data.notate();
+        assert_eq!(result, "_")
+    }
+
+    #[test]
+    fn notate_true_boolean_value() {
+        let data: Value = json_from(r#"true"#);
+        let result: String = data.notate();
+        assert_eq!(result, "trueB")
+    }
+
+    #[test]
+    fn notate_false_boolean_value() {
+        let data: Value = json_from(r#"false"#);
+        let result: String = data.notate();
+        assert_eq!(result, "falseB")
     }
 }
