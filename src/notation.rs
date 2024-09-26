@@ -141,4 +141,11 @@ mod tests {
         let result: String = data.notate();
         assert_eq!(result, "1NaSAH")
     }
+
+    #[test]
+    fn notate_nested_hash_data_structure() {
+        let data: Value = json_from(r#"{"a": {"c": null, "2": 2 }}"#);
+        let result: String = data.notate();
+        assert_eq!(result, "aS2S2NA_cSAHAH")
+    }
 }

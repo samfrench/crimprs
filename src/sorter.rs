@@ -8,9 +8,6 @@ pub fn sorter(mut data: Value) -> Value {
 fn sort_value(value: &mut Value) {
     match value {
         Value::Array(arr) => {
-            for elem in arr.iter_mut() {
-                sort_value(elem);
-            }
             arr.sort_by(|a: &Value, b: &Value| {
                 string_to_ascii(normalise_value(a)).cmp(&string_to_ascii(normalise_value(b)))
             });
@@ -19,7 +16,6 @@ fn sort_value(value: &mut Value) {
             let mut data: Vec<(String, Value)> = Vec::new();
 
             for (key, value) in obj.iter_mut() {
-                sort_value(value);
                 data.push((key.clone(), value.clone()));
             }
 
@@ -60,8 +56,13 @@ mod tests {
             r#"[7, ["b", 2], [4, "b"], [1, 2], ["c", "b"], "c", 3, [2, "a"], [3, 2], ["a", 1]]"#,
         );
         let result: Value = sorter(data);
+        // If this did deep sorting this would be the expected output.
+        // This is now done iteratively in the notation.
+        // let expected: Value = json_from(
+        //     r#"[3, 7, ["b", "c"], [1, "a"], [1, 2], [2, "a"], [2, "b"], [2, 3], [4, "b"], "c"]"#,
+        // );
         let expected: Value = json_from(
-            r#"[3, 7, ["b", "c"], [1, "a"], [1, 2], [2, "a"], [2, "b"], [2, 3], [4, "b"], "c"]"#,
+            r#"[3, 7, ["a", 1], ["b", 2], ["c", "b"], [1, 2], [2, "a"], [3, 2], [4, "b"], "c"]"#,
         );
         assert_eq!(result, expected);
     }
@@ -70,7 +71,10 @@ mod tests {
     fn sort_short_array_of_data() {
         let data: Value = json_from(r#"[["c", "b"], ["a", 1]]"#);
         let result: Value = sorter(data);
-        let expected: Value = json_from(r#"[["b", "c"], [1, "a"]]"#);
+        // If this did deep sorting this would be the expected output.
+        // This is now done iteratively in the notation.
+        // let expected: Value = json_from(r#"[["b", "c"], [1, "a"]]"#);
+        let expected: Value = json_from(r#"[["a", 1], ["c", "b"]]"#);
         assert_eq!(result, expected);
     }
 
@@ -140,9 +144,12 @@ mod tests {
 
     #[test]
     fn sort_nested_hash_data_structure() {
+        // If this did deep sorting this would be the expected output.
+        // This is now done iteratively in the notation.
+        // let expected: Value = json_from(r#"[["a", [["2", 2], ["c", null]]]]"#);
         let data: Value = json_from(r#"{"a": {"c": null, "2": 2 }}"#);
         let result: Value = sorter(data);
-        let expected: Value = json_from(r#"[["a", [["2", 2], ["c", null]]]]"#);
+        let expected: Value = json_from(r#"[["a", {"2": 2, "c": null}]]"#);
         assert_eq!(result, expected);
     }
 
