@@ -61,15 +61,11 @@ impl Notation for Value {
     }
 }
 
-fn json_from(input: &str) -> Value {
-    serde_json::from_str(input).expect("Invalid JSON")
-}
-
 #[cfg(test)]
 mod tests {
-    use serde_json::Value;
-
     use super::*;
+
+    use crate::tests::json_from;
 
     #[test]
     fn notate_string() {

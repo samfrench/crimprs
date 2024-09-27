@@ -10,13 +10,13 @@ pub fn signature(value: Value) -> String {
     format!("{:x}", md5::compute(value.notate()))
 }
 
-fn json_from(input: &str) -> Value {
-    serde_json::from_str(input).expect("Invalid JSON")
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    pub fn json_from(input: &str) -> Value {
+        serde_json::from_str(input).expect("Invalid JSON")
+    }
 
     #[test]
     fn signature_for_string() {

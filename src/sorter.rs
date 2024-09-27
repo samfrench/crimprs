@@ -42,13 +42,11 @@ fn string_to_ascii(input: String) -> Vec<u8> {
     input.chars().map(|c| c as u8).collect()
 }
 
-fn json_from(input: &str) -> Value {
-    serde_json::from_str(input).expect("Invalid JSON")
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    use crate::tests::json_from;
 
     #[test]
     fn sorter_of_data() {
