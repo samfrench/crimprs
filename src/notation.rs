@@ -2,7 +2,7 @@ use serde_json::Value;
 
 use crate::sorter::sorter;
 
-trait Notation {
+pub trait Notation {
     fn notate(&self) -> String;
 }
 
